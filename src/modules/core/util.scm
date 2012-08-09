@@ -1,0 +1,11 @@
+(define (new-eid)
+  (ensure-db-connection)
+  (if (redis-exists "#last-eid")
+    (let ((eid (redis-get "#last-eid")))
+      (redis-incr "#last-eid")
+      eid))
+    (let* ((start-magnitude
+             (- (hash-table-ref (*config*) "entity-space-magnitude") 1))
+           (result (expt 10 start-magnitude)))
+      (redis-set "#last-eid" result)
+      (number->string result)))
