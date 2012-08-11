@@ -125,6 +125,14 @@
       (redis-set "@last-eid" result)
       (number->string result)))
 
+(define (fun->string f)
+  (with-output-to-string
+    (lambda () (serialize f))))
+
+(define (string->fun s)
+  (with-input-from-string
+    s
+    (lambda () (deserialize))))
 
 (define (->bool x)
   (case x
@@ -192,13 +200,9 @@
 
 (define (make-data-type name validator scm->db db->scm)
   (ensure-db-connection)
-  (let* ((serialize*
-          (lambda (f)
-            (with-output-to-string
-              (lambda () (serialize f)))))
-         (validator* (serialize* validator))
-         (scm->db* (serialize* scm->db))
-         (db->scm* (serialize* db->scm))
+  (let* ((validator* (fun->string validator))
+         (scm->db* (fun->string scm->db))
+         (db->scm* (fun->string db->scm))
          (key (string-append "@dt:" name)))
     (redis-watch key)
     (when (redis-exists key)
@@ -208,6 +212,16 @@
     (redis-hset key "scm->db" scm->db*)
     (redis-hset key "db->scm" db->scm*)
     (redis-exec))) 
+
+(define (get-dtspec name #!optional fields)
+  (let ((key (string-append "@dt:" name))
+        (fields*
+          (or fields
+              '("validator" "scm->db" "db->scm"))))
+    (map
+      (lambda (field-name)
+        (string->fun (redis-hget key field-name)))
+      fields*)))
 
 (define (make-schema node-type . field-specs)
   '())
