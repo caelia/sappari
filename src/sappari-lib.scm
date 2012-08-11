@@ -198,6 +198,28 @@
 ;;; ============================================================================
 ;;; --  BASE DATA MODEL  -------------------------------------------------------
 
+(define (make-vocabulary name)
+  (let ((name* (string-append "@vocab:" name)))
+    (lambda (command . args)
+      (case command
+        ((set!)
+         (when (redis-exists name*)
+           (redis-del name*))
+         (for-each
+           (lambda (term) (redis-sadd name* term))
+           args))
+        ((add)
+         (for-each
+           (lambda (term) (redis-sadd name* term))
+           args))
+        ((get)
+         (redis-smembers name*))
+        ((del)
+         (for-each
+           (lambda (term) (redis-sdel name* term))))
+        ((destroy)
+         (redis-delete name*))))))
+
 (define (make-data-type name validator scm->db db->scm)
   (ensure-db-connection)
   (let* ((validator* (fun->string validator))
@@ -211,7 +233,18 @@
     (redis-hset key "validator" validator*)
     (redis-hset key "scm->db" scm->db*)
     (redis-hset key "db->scm" db->scm*)
-    (redis-exec))) 
+    (redis-exec)))
+
+(define (make-structured-data-type specs)
+  (let ((structure-type (car specs)))
+    (case structure-type
+      ((list)
+       (let ((fixed-length (cadr specs))
+             (homogeneous (caddr specs))
+             (element-types (cadddr specs)))
+      ((hash) #f)
+      (else (abort "Not a valid structure type.")))))
+    
 
 (define (get-dtspec name #!optional fields)
   (let ((key (string-append "@dt:" name))
