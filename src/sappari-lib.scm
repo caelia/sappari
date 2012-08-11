@@ -113,16 +113,24 @@
 ;;; --  UTILITY FUNCTIONS  -----------------------------------------------------
 
 (define (new-eid)
+  (ensure-config-loaded)
   (ensure-db-connection)
   (if (redis-exists "@last-eid")
     (let ((eid (redis-get "@last-eid")))
       (redis-incr "@last-eid")
       eid))
     (let* ((start-magnitude
-             (- (hash-table-ref (*config*) "entity-space-magnitude") 1))
+             (- (hash-table-ref (*site-config*) "entity-space-magnitude") 1))
            (result (expt 10 start-magnitude)))
       (redis-set "@last-eid" result)
       (number->string result)))
+
+
+(define (->bool x)
+  (case x
+    ((0 "0" #\f #\F #\n #\N "f" "F" "n" "N") #f)
+    ((1 "1" #\t #\T #\y #\Y "t" "T" "y" "Y") #t)
+    (else (abort "Not a boolean value."))))
 
 ;;; ============================================================================
 
@@ -173,7 +181,6 @@
 
 (define (end-session session-key)
   (redis-del session-key))
-       (redis-expire session-key
 
 
 ;;; ============================================================================
@@ -182,6 +189,36 @@
 
 ;;; ============================================================================
 ;;; --  BASE DATA MODEL  -------------------------------------------------------
+
+(define (make-data-type name validator scm->db db->scm)
+  (ensure-db-connection)
+  (let* ((serialize*
+          (lambda (f)
+            (with-output-to-string
+              (lambda () (serialize f)))))
+         (validator* (serialize* validator))
+         (scm->db* (serialize* scm->db))
+         (db->scm* (serialize* db->scm))
+         (key (string-append "@dt:" name)))
+    (redis-watch key)
+    (when (redis-exists key)
+      (abort "Data type already exists."))
+    (redis-multi)
+    (redis-hset key "validator" validator*)
+    (redis-hset key "scm->db" scm->db*)
+    (redis-hset key "db->scm" db->scm*)
+    (redis-exec))) 
+
+(define (make-schema node-type . field-specs)
+  '())
+
+(define (get-schema node-type)
+  #f)
+
+(define (make-node-proxy node-type)
+  (let ((schema (get-schema node-type)))
+    '()))
+
 ;;; ============================================================================
 
 
