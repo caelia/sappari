@@ -2,10 +2,11 @@
 
 (make-data-type "string" string? (lambda (s) (string-append "s" s)) identity)
 
-(make-data-type "system-role" )
+(let ((vocab (make-vocabulary "system-role")))
+  (vocab 'set! "administrator" "editor" "member" "guest"))
 
 (make-structured-data-type "system-role-list"
-                           '(list #f #t "string"))
+                           '(list #f #t "system-role"))
 
 
 (make-schema "user"
