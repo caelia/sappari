@@ -1,7 +1,7 @@
-Kanrikai Basics
+Sappari Basics
 ===============
 
-Kanrikai is a lightweight CMS developed in Chicken Scheme. The major goals
+Sappari is a lightweight CMS developed in Chicken Scheme. The major goals
 of this project are:
 
  * Good performance
@@ -9,14 +9,15 @@ of this project are:
  * Well-conceived consistent data model
  * Easy navigation
 
-Massive scalability is *not* a goal. Kanrikai is intended for small to
+Massive scalability is *not* a goal. Sappari is intended for small to
 medium web sites--though if it also proves suitable for large sites, that
 would be a welcome result.
 
-The name is a compound of the Japanese words "kanri," which means
-management, and "rikai," which means understanding or comprehension.
+The name is a Japanese word that is rather hard to translate. It means
+something like clean, clear, refreshed, or refreshing. There are other
+meanings, too, but the foregoing are the senses in which we use the word.
 
-In addition to Chicken Scheme, Kanrikai requires the Redis database for data
+In addition to Chicken Scheme, Sappari requires the Redis database for data
 persistence and (optional but highly recommended) Git for content
 versioning.
 
@@ -25,7 +26,7 @@ Key Concepts
 ------------
 
 ENTITY: An Entity is a generic abstraction of everything managed by
-Kanrikai. Every entity has a type, and at least an ID and data; depending on
+Sappari. Every entity has a type, and at least an ID and data; depending on
 the type, it may have one or more customized data fields. Many of the
 following items are specialized types of entities.
 
@@ -47,7 +48,7 @@ A region has a node selection filter (which generates the collection to be
 displayed), a layout specification, and a style.
 
 MODULE: A module is an installable software package that provides
-capabilities for Kanrikai. Everything that can be installed on top of the
+capabilities for Sappari. Everything that can be installed on top of the
 basic platform is a module.
 
 ZONE: A zone is a collection of entities, which may be defined by either a
