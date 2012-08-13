@@ -1,0 +1,73 @@
+Kanrikai Basics
+===============
+
+Kanrikai is a lightweight CMS developed in Chicken Scheme. The major goals
+of this project are:
+
+ * Good performance
+ * Ease of use
+ * Well-conceived consistent data model
+ * Easy navigation
+
+Massive scalability is *not* a goal. Kanrikai is intended for small to
+medium web sites--though if it also proves suitable for large sites, that
+would be a welcome result.
+
+The name is a compound of the Japanese words "kanri," which means
+management, and "rikai," which means understanding or comprehension.
+
+In addition to Chicken Scheme, Kanrikai requires the Redis database for data
+persistence and (optional but highly recommended) Git for content
+versioning.
+
+
+Key Concepts
+------------
+
+ENTITY: An Entity is a generic abstraction of everything managed by
+Kanrikai. Every entity has a type, and at least an ID and data; depending on
+the type, it may have one or more customized data fields. Many of the
+following items are specialized types of entities.
+
+NODE: A Node is the basic unit of content. A node is a type of entity; it
+has a type, and according to the type, includes customized fields.
+
+NODE TYPE: A Node Type defines fields for nodes of that type.
+
+NODE COLLECTION: A set of 0 or more nodes. A node collection may defined
+statically as a list of node IDs, or dynamically using a query.
+
+VIEW: A View is a particular presentation of content, roughly corresponding
+to a "page" in traditional web development, or a "resource" in HTTP
+terminology. A view typically contains one or more regions, and displays
+them according to a style defined in a theme.
+
+REGION: A Region is an area within a view that displays a node collection.
+A region has a node selection filter (which generates the collection to be
+displayed), a layout specification, and a style.
+
+MODULE: A module is an installable software package that provides
+capabilities for Kanrikai. Everything that can be installed on top of the
+basic platform is a module.
+
+ZONE: A zone is a collection of entities, which may be defined by either a
+static list or a set of criteria. A zone is an abstract entity that is used
+primarily for access control. There are several built-in zones, including
+"whole site," "this node," and "all nodes created by the current user."
+
+ROLES: A role has a name, such as "administrator," "editor," or "guest."
+Each role has permissions over various entities in the system, and each user
+has at least one role.
+
+
+Official Module Collection
+--------------------------
+
+Consists of Recommended modules, sponsored by the core development team,
+Community modules, sponsored by a community of trusted users, and
+Experimental modules, which are unsponsored and may be untested. Recommended
+and Community modules must pass the testing protocol.
+
+Needed
+------
+ * distributed testing protocol
