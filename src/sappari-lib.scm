@@ -140,6 +140,9 @@
     ((1 "1" #\t #\T #\y #\Y "t" "T" "y" "Y") #t)
     (else (abort "Not a boolean value."))))
 
+(define (bool->string b)
+  (if b "1" "0"))
+
 ;;; ============================================================================
 
 
@@ -235,13 +238,28 @@
     (redis-hset key "db->scm" db->scm*)
     (redis-exec)))
 
-(define (make-structured-data-type specs)
+(define (make-structured-data-type name specs)
   (let ((structure-type (car specs)))
     (case structure-type
       ((list)
-       (let ((fixed-length (cadr specs))
-             (homogeneous (caddr specs))
+       (let ((fixed-length (bool->dbstring (cadr specs)))
+             (homogeneous (bool->dbstring (caddr specs)))
              (element-types (cadddr specs)))
+         (redis-watch name)
+         (when (redis-exists name)
+           (abort "Attempted to create a data type that already exists."))
+         (redis-multi)
+         (redis-hset name "structure-type" (symbol->dbstring structure-type))
+         (redis-hset name "fixed-length" fixed-length)
+         (redis-hset name "homogeneous" homogeneous)
+         (if (string? element-types)
+           (redis-hset name "element-types" (string->dbstring element-types))
+           (let ((anon-id (make-anonymous-node)))
+             (for-each
+               (lambda (elt)
+                 (redis-rpush anon-id (string->dbstring elt)))
+               element-types)
+             (redis-hset name "element-types" (string-append "I" anon-id))))))
       ((hash) #f)
       (else (abort "Not a valid structure type.")))))
     
