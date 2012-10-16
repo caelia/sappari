@@ -10,6 +10,12 @@
 ;;; The config object will become a hash table when loaded
 (define *site-config* (make-parameter #f))
 
+;;; This path is shared among all instances
+(define *global-package-path* (make-parameter #f))
+
+;;; Each instance sets this to its own location
+(define *instance-package-path* (make-parameter #f))
+
 ;;; The main dispatch table will hold functions provided by modules
 (define *dispatch-table* (make-parameter (make-hash-table)))
 
@@ -306,10 +312,21 @@
 (define (install-theme src dest)
   #f)
 
-;;; ============================================================================
-
-
 
 ;;; ============================================================================
-;;; ----------------------------------------------------------------------------
+
+
+
+;;; ============================================================================
+;;; --  INSTANCE MANAGEMENT  ---------------------------------------------------
+
+(define (setup-instance name path #!optional (force #f))
+  (let ((path*
+          (if (absolute-pathname? path)
+            path
+            (normalize-pathname
+              (make-pathname
+                (current-directory) path)))))
+   ))
+
 ;;; ============================================================================
