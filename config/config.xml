@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<config>
+  <defaults>
+    <db-host>localhost</db-host>
+    <db-port>6379</db-port>
+    <entity-space-magnitude>8</entity-space-magnitude>
+    <fastcgi-socket-type>tcp</fastcgi-socket-type>
+    <fastcgi-port>3122</fastcgi-port>
+    <session-timeout>900</session-timeout>
+  </defaults>
+</config>

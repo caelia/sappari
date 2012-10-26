@@ -1,8 +1,0 @@
-{
-  "db-host": "localhost",
-  "db-port": 6379,
-  "entity-space-magnitude": 8,
-  "fastcgi-socket-type": "tcp",
-  "fastcgi-port": 3122,
-  "session-timeout": 900
-}
