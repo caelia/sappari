@@ -1,0 +1,157 @@
+Sappari Terminology
+===================
+
+Software
+--------
+
+ *  **Component**
+    
+    Component is a general term referring to any of the parts that make up a
+    Sappari site.
+
+ *  **Core**
+
+    The core is the fundamental component of Sappari, consisting of an
+    executable (the "engine") and several libraries that are essential to
+    operating the site.
+
+ *  **Package**
+
+    A package is a downloadable component that provides either extended
+    functionality or look-and-feel.
+
+ *  **Registered**
+
+    Packages may be registered in the Sappari Package Directory.
+    Registering a package does not imply approval by the development team.
+    Every registered package must have a unique name.
+
+ *  **Extension**
+    
+    An extension is a package that adds non-essential functionality to a
+    site. Usually it will consist mainly of Chicken Scheme code which is 
+    made available as a library when it is installed.
+
+ *  **Interface**
+
+    Every extension implements an interface. In the simplest case, the
+    interface is simply the public functionality exposed by the extension,
+    and by default the name and version of the interface are the same as
+    those of the extension. However, developers may create an alternate
+    implementation of an interface, in which case they should declare that
+    their extension implements that interface.
+
+ *  **Theme**
+
+    A theme is a package that modifies the presentation of content. Themes
+    usually consist of templates, stylesheets, and (client-side) scripts.
+
+ *  **Scope**
+    
+    In reference to a theme, *scope* refers to the portion of the site that
+    is affected by the theme. Most themes will be site-wide, but it is also
+    possible to have themes whose effect is limited to specific pages or
+    areas of pages.
+
+ *  **Base**
+
+    Base is a software bundle consisting of the core and a small set of
+    packages that, while not absolutely essential, are considered necessary
+    to do anything useful with a site. For most users, downloading and
+    installing Base will be the first step in building a site.
+
+Data Model
+----------
+
+ *  **Node**
+
+    A node is the fundamental building block in the Sappari system. It is an
+    abstraction that comprises a variety of different concrete entities. A
+    document is one kind of node, as is a user, a view, or a workflow.
+
+ *  **Resource**
+
+    Where this term is used in reference to Sappari, it generally refers to
+    an entity of interest to external users, and which is identified by an
+    externally accessible URI. *Resource* is similar to a *node,* but *node*
+    in this context is a broader term, inasmuch as some nodes are only
+    visible and/or meaningful with the Sappari ecosystem.
+
+ *  **URISpace**
+
+    A urispace is a hierarchical set of URIs within a Sappari site.
+    Typically, each urispace is the "territory" of a single software
+    component, and other components should not create, remove, or modify
+    resources within that urispace except through an API provided by the
+    controlling component.
+
+
+Presentation
+------------
+
+ *  **View**
+    
+    A view is essentially a rule for transforming data into published
+    output. 
+
+ *  **Page**
+
+    Page means what it usually means in the context of web design.
+
+ *  **Pane**
+    
+    A pane is an area of a page that contains text and/or media objects.
+    There are several types of panes, including *global panes*, which appear
+    on all pages; *local panes*, which are specific to a give page or group
+    of pages, and *ad hoc panes*, which may appear or disappear depending on
+    the content being displayed or on events occurring on the site.
+
+ *  **Theme**
+
+    A theme is a coordinated set of templates, stylesheets, and scripts that
+    define the look and feel of the site as a whole, a specific page, or a
+    pane.
+
+
+Site Administration
+-------------------
+
+ *  **Zone**
+    
+    A zone is an set of nodes grouped together for the purpose of assigning
+    access permissions. Several types of zones exist by default: the whole
+    site is a zone, as is a single node. A urlspace is also a zone. However,
+    site administrators may define additional zones consisting of a list of
+    specified nodes, or based on arbitrary criteria. 
+
+    Within any given zone, permissions are assigned based on user roles, and
+    each user may have one or more roles within a particular zone.
+
+ *  **User**
+
+    A user is any person, identified or not, who interacts with a Sappari site.
+    A user who has not logged in is considered an *anonymous user* or
+    *guest*.
+
+ *  **Role**
+
+    A role is a named property of one or more users, which is the basis for
+    assigning privileges on the site. Typical roles include "administrator,"
+    "authenticated user," "editor," and "owner (of a resource)." You may
+    create any roles you wish, with whatever names and privileges you
+    choose. A fresh installation of Sappari has two built-in roles:
+    *superuser* and *guest.* The superuser (equivalent to "root" or "Admin"
+    in some other systems) has complete control over the site and its users.
+    A guest, by default, may view all the site content (other than the
+    administration interface) but may not perform any other operations.
+
+    Each role is associated with a particular zone; in many cases, this zone
+    will be the entire site, but roles can be created (and users assigned to
+    those roles) for any zone. One common case is the *owner* role, which is
+    typically assigned to a person who submits content to the site, at the
+    time they submit the content. You can also create local roles as needed:
+    for example, say your site includes a photo gallery. You could create a
+    "gallery manager" role, with the ability to organize, edit, or delete
+    photos in the gallery. This role can be limited such that the people
+    assigned to this role have no privileges on images outside the photo
+    gallery.
