@@ -23,8 +23,8 @@
 ;;; ------------------------------------------------------------------------
 
 (define +default-site-skeleton+
-  '("build" "content" "etc" "extensions" ("sites" ("default")) "schemas"
-          ("static" ("fonts" "pages" "scripts" "style" "media"))
+  '("build" "content" "etc" "extensions" ("sites" ("demo")) "schemas"
+          ("static" ("decor" "fonts" "media" "pages" "scripts" "style"))
           ("themes" (("plain" ("pink" "green"))))))
 
 
@@ -45,10 +45,11 @@
         (let ((head (car dirs)))
           (if (string? head)
             (create-directory head)
-            (let ((sub (car head)))
-              (create-directory sub)
-              (change-directory sub)
-              (loop (cdr head))
+            (let ((head* (car head))
+                  (subs (cadr head)))
+              (create-directory head*)
+              (change-directory head*)
+              (loop subs)
               (change-directory "..")))
           (loop (cdr dirs)))))))
 
