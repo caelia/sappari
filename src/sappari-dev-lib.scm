@@ -1,10 +1,10 @@
-;;; sappari-dev-lib.scm -- functions for setting up and maintaining
+;;; sappari-tools.scm -- functions for setting up and maintaining
 ;;;   Sappari package directories.
-;;;   Copyright © 2012 by Matt Gushee <matt@gushee.net>.
-;;;   * This is open source software, released under the BSD license.
+;;; Copyright © 2012 by Matt Gushee <matt@gushee.net>.
+;;; This is open source software, released under the BSD license.
 ;;;   See the LICENSE file for details.
 
-(module sappari-setup 
+(module sappari-tools 
         *
 ;        (
 ;         )
@@ -20,8 +20,31 @@
         (use easy-args)
         
 
-;;; [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
-;;; ------------------------------------------------------------------------
+;;; IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+;;; --  GLOBAL DEFINITIONS  ------------------------------------------------
+
+;; Recognized values are 'git, 'none, and 'manual
+(define *version-control* (make-parameter 'git))
+
+;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+
+
+
+;;; IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+;;; --  GIT INTERACTION  ---------------------------------------------------
+
+;; Apparently there is no such predicate in the git egg, so we check for
+;;   the existence of a .git directory.
+(define (is-git-repo? #!optional (parent "."))
+  (directory? (gitdir (make-pathname parent ".git"))))
+
+
+;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+
+
+
+;;; IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+;;; --  PACKAGE DIRECTORIES  -----------------------------------------------
 
 (define +default-site-skeleton+
   '("build" "content" "etc" "extensions" ("sites" ("demo")) "schemas"
@@ -39,12 +62,14 @@
 (define (schema-skeleton)
   (list "schemas"))
 
+(define (ui-skeleton)
+  (list "ui"))
 
-;;; ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
 
 
-;;; [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
+;;; IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 ;;; --  PUBLIC API  --------------------------------------------------------
 
 (define (setup-site-skeleton #!key (parent-path ".") (site-dirname "sappari"))
@@ -66,12 +91,13 @@
           (loop (cdr dirs)))))))
 
 
-;;; ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
 )
 
-;;; [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
-;;; ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+;;; IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 ;;; ------------------------------------------------------------------------
+;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 ;;; ========================================================================
+;;; ------------------------------------------------------------------------
 
