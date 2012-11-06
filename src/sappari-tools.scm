@@ -1,5 +1,4 @@
-;;; sappari-tools.scm -- Miscellaneous useful functions to support
-;;;   Sappari command-line tools.
+;;; sappari-tools.scm -- Support library for command-line tools.
 ;;; Copyright © 2012 by Matthew C. Gushee <matt@gushee.net>
 ;;; This is open source software, released under the BSD license. See
 ;;;   the accompanying LICENSE file for details.
@@ -17,6 +16,7 @@
           (import data-structures)
           (import srfi-13)
 
+          (use section-combinators)
           (use git)
           (use snowtar)
           (use z3)
@@ -74,10 +74,37 @@
     (z3:write-encoded zfh #f)
     (file-close fno)))
 
+(define (gzfile->data file-name)
+  (let ((zport (z3:open-compressed-input-file file-name)))
+    (with-output-to-string
+      (lambda ()
+        (let ((result (read-all zport)))
+          (close-input-port zport)
+          result)))))
+
 (define (unpack-targz-archive arc-file
                               #!key (dest-dir #f)
                               (delete-archive #f))
-  #f)
+  (let* ((pfxer
+           (if dest-dir
+             (left-section make-pathname dest-dir)
+             identity))
+         (tar-string
+           (gzfile->data arc-file))
+         (tar-recs
+           (with-input-from-string tar-string
+             (lambda ()
+               (tar-unpack-genport (current-input-port))))))
+    (for-each
+      (lambda (trec)
+        (let ((path (pfxer (tar-rec-name trec))))
+          (if (eqv? (tar-rec-type trec) 'directory)
+            (create-directory path #t)
+            (with-output-to-file
+              path
+              (lambda ()
+                (write (tar-unpack-u8vector (tar-rec-content trec)))))))))))
+
 
 ;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
