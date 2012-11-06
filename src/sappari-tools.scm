@@ -1,24 +1,26 @@
-;;; sappari-tools.scm -- functions for setting up and maintaining
-;;;   Sappari package directories.
-;;; Copyright © 2012 by Matt Gushee <matt@gushee.net>.
-;;; This is open source software, released under the BSD license.
-;;;   See the LICENSE file for details.
+;;; sappari-tools.scm -- Miscellaneous useful functions to support
+;;;   Sappari command-line tools.
+;;; Copyright © 2012 by Matthew C. Gushee <matt@gushee.net>
+;;; This is open source software, released under the BSD license. See
+;;;   the accompanying LICENSE file for details.
 
-(module sappari-tools 
-        *
-;        (
-;         )
 
-        (import scheme)
-        (import chicken)
-        (import posix)
-        (import files)
+(module sappari-tools
+          *
 
-        (use git)
-        (use z3)
-        (use snowtar)
-        (use easy-args)
-        
+          (import scheme)
+          (import chicken)
+          (import posix)
+          (import files)
+          (import ports)
+          (import utils)
+          (import data-structures)
+          (import srfi-13)
+
+          (use git)
+          (use snowtar)
+          (use z3)
+
 
 ;;; IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 ;;; --  GLOBAL DEFINITIONS  ------------------------------------------------
@@ -38,6 +40,44 @@
 (define (is-git-repo? #!optional (parent "."))
   (directory? (gitdir (make-pathname parent ".git"))))
 
+
+;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+
+
+
+;;; IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+;;; --  TAR ARCHIVE HANDLING  ----------------------------------------------
+
+(define (directory->tar-data dir)
+  (with-output-to-string
+    (lambda ()
+      (tar-pack-genport (tar-read-file dir) (current-output-port)))))
+
+
+(define (directory->tar-file dir #!key (tar-name #f))
+  (let ((tar-file (or tar-name (string-append dir ".tar"))))
+    (tar-pack-file (tar-read-file dir) tar-file)
+    tar-file))
+
+(define (directory->targz-data dir)
+  #f)
+
+(define (directory->targz-file dir
+                               #!key (targz-name #f)
+                               (dest-dir #f)
+                               (delete-src #f))
+  (let* ((targz-file (or targz-name (string-append dir ".tar.gz")))
+         (fno (file-open targz-file (+ open/wronly open/creat)))
+         (zfh (z3:encode-file fno))
+         (data (directory->tar-data dir)))
+    (z3:write-encoded zfh data)
+    (z3:write-encoded zfh #f)
+    (file-close fno)))
+
+(define (unpack-targz-archive arc-file
+                              #!key (dest-dir #f)
+                              (delete-archive #f))
+  #f)
 
 ;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
@@ -93,11 +133,13 @@
 
 ;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
-)
+) ; END MODULE
 
 ;;; IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 ;;; ------------------------------------------------------------------------
+
 ;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+
 ;;; ========================================================================
 ;;; ------------------------------------------------------------------------
 
