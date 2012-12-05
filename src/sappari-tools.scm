@@ -14,35 +14,13 @@
           (import ports)
           (import utils)
           (import data-structures)
+          (import srfi-4)
           (import srfi-13)
 
           (use section-combinators)
           (use git)
           (use snowtar)
           (use z3)
-
-
-;;; IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-;;; --  GLOBAL DEFINITIONS  ------------------------------------------------
-
-;; Recognized values are 'git, 'none, and 'manual
-(define *version-control* (make-parameter 'git))
-
-;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-
-
-
-;;; IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-;;; --  GIT INTERACTION  ---------------------------------------------------
-
-;; Apparently there is no such predicate in the git egg, so we check for
-;;   the existence of a .git directory.
-(define (is-git-repo? #!optional (parent "."))
-  (directory? (gitdir (make-pathname parent ".git"))))
-
-
-;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-
 
 
 ;;; IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
@@ -80,7 +58,7 @@
       (lambda ()
         (let ((result (read-all zport)))
           (close-input-port zport)
-          result)))))
+          (display result))))))
 
 (define (unpack-targz-archive arc-file
                               #!key (dest-dir #f)
@@ -103,7 +81,8 @@
             (with-output-to-file
               path
               (lambda ()
-                (write (tar-unpack-u8vector (tar-rec-content trec)))))))))))
+                (write-u8vector (tar-rec-content trec)))))))
+      tar-recs)))
 
 
 ;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
